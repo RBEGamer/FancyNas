@@ -24,3 +24,7 @@ A simple Nas system with info display
 * chmod +x nas_disp_updater.py
 * chmod +x auto_run.sh
 * add the auto_run path to your /etc/rc.local
+
+# CHANGE HOSTNAME
+* /etc/hostname 
+* /etc/hosts
