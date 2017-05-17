@@ -22,8 +22,8 @@ def get_ip_address(ifname):
 watch_disk_path="/home/" #change to owncloud drive
 
 ser = serial.Serial(
-    port='/dev/ttyACM0',
-    baudrate=9600,
+    port='/dev/ttyACM0', #change eg /dev/ttyUSB0
+    baudrate=9600,        # change to 9600 baud see script.ino
     parity=serial.PARITY_ODD,
     stopbits=serial.STOPBITS_TWO,
     bytesize=serial.SEVENBITS
