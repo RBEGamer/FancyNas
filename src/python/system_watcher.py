@@ -1,10 +1,14 @@
+# please install first :
+#apt get install python-serial psutils net-tools
+
 import os
 from collections import namedtuple
 import time
-#import serial
+import serial
 import socket
 import fcntl
 import struct
+import subprocess
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -15,17 +19,17 @@ def get_ip_address(ifname):
     )[20:24])
 
 
-watch_disk_path="/" #change to owncloud drive
+watch_disk_path="/home/" #change to owncloud drive
 
-#ser = serial.Serial(
-#    port='/dev/ttyUSB1',
-#    baudrate=9600,
-#    parity=serial.PARITY_ODD,
-#    stopbits=serial.STOPBITS_TWO,
-#    bytesize=serial.SEVENBITS
-#)
+ser = serial.Serial(
+    port='/dev/ttyACM0',
+    baudrate=9600,
+    parity=serial.PARITY_ODD,
+    stopbits=serial.STOPBITS_TWO,
+    bytesize=serial.SEVENBITS
+)
 
-#ser.isOpen()
+ser.isOpen()
 
 
 _ntuple_diskusage = namedtuple('usage', 'total used free')
@@ -46,13 +50,16 @@ def disk_usage(path):
 
 
 while 42:
-    uart_send_string = "_" + watch_disk_path
-    watch_disk_usage_percentage = int(((1.0/disk_usage(watch_disk_path).total) * disk_usage(watch_disk_path).free)*100)
-    uart_send_string += str(watch_disk_usage_percentage) + "_"
-
-    uart_send_string += get_ip_address("eth0") + "_"
-    uart_send_string += get_ip_address("wlan0") + "_"
-    print(uart_send_string)
-    #ser.write(uart_send_string + '\n')
+    # GET DIS USAGE
+    watch_disk_usage_percentage = int(((1.0/disk_usage(watch_disk_path).total) * disk_usage(watch_disk_path).used)*100)
+    # GET RAM
+    tot_m, used_m, free_m = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
+    ram_usage_percentage = (1.0/tot_m)*used_m*100
+    uart_send_string = "127.0.0.01" + "_" + str(watch_disk_path) + "_" + str(watch_disk_usage_percentage) + "_" + str(int(ram_usage_percentage)) + "_"
+   
+    print("send :  "+uart_send_string)
+    ser.write(uart_send_string + "\n")
     time.sleep(1)
+  #  print(ser.read())
     pass
+
