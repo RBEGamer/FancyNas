@@ -1,5 +1,6 @@
+#!/usr/local/bin/python3
 # please install first :
-#apt get install python-serial psutils net-tools
+#apt get install python3-serial psutils net-tools
 
 import os
 from collections import namedtuple
@@ -25,8 +26,8 @@ ser = serial.Serial(
     port='/dev/ttyACM0', #change eg /dev/ttyUSB0
     baudrate=9600,        # change to 9600 baud see script.ino
     parity=serial.PARITY_ODD,
-    stopbits=serial.STOPBITS_TWO,
-    bytesize=serial.SEVENBITS
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS
 )
 
 ser.isOpen()
@@ -34,11 +35,6 @@ ser.isOpen()
 
 _ntuple_diskusage = namedtuple('usage', 'total used free')
 def disk_usage(path):
-    """Return disk usage statistics about the given path.
-
-    Returned valus is a named tuple with attributes 'total', 'used' and
-    'free', which are the amount of total, used and free space, in bytes.
-    """
     st = os.statvfs(path)
     free = st.f_bavail * st.f_frsize
     total = st.f_blocks * st.f_frsize
@@ -46,10 +42,9 @@ def disk_usage(path):
     return _ntuple_diskusage(total, used, free)
 
 
-
-
-
+counter = 0;
 while 42:
+    counter = counter+1
     # GET DIS USAGE
     watch_disk_usage_percentage = int(((1.0/disk_usage(watch_disk_path).total) * disk_usage(watch_disk_path).used)*100)
     # GET RAM
@@ -57,8 +52,10 @@ while 42:
     ram_usage_percentage = (1.0/tot_m)*used_m*100
     uart_send_string = "127.0.0.01" + "_" + str(watch_disk_path) + "_" + str(watch_disk_usage_percentage) + "_" + str(int(ram_usage_percentage)) + "_"
    
-    print("send :  "+uart_send_string)
-    ser.write(uart_send_string + "\n")
+
+    bytes = bytearray(uart_send_string + '\n','ascii')
+    ser.write(bytes)
+
     time.sleep(1)
   #  print(ser.read())
     pass
