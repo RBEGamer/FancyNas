@@ -17,3 +17,10 @@ A simple Nas system with info display
 * 2x 25x15x0.5 (black)
 * 2x 15x10.5x0.5
 * 2x 15.5x10.5x0.5
+
+# PYTHON SETUP
+* install python3 net-tools python3-serial psutils
+* download the python folder
+* chmod +x nas_disp_updater.py
+* chmod +x auto_run.sh
+* add the auto_run path to your /etc/rc.local
