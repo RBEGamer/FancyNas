@@ -73,7 +73,8 @@ delay(2000);
 String readString;
 String msg1 = "";
 String msg2 = "";
-int msg3 = 0;
+int msg3 = 0; //HDD SPACE
+int msg4 = 0; //RAM USAGE
 bool fin = false;
 void loop() {
     display.clearDisplay();
@@ -83,9 +84,12 @@ void loop() {
     if (Serial.available() >0) {
       char c = Serial.read();  //gets one byte from serial buffer
       readString += c; //makes the string readString
-      if(c == '\n'){msg1 = "IP:" + getValue(readString, '_', 0);
+      if(c == '\n'){
+        Serial.println(readString);
+        msg1 = "IP:" + getValue(readString, '_', 0);
     msg2 = getValue(readString, '_', 1);
     msg3 = getValue(readString, '_', 2).toInt();
+     msg4 = getValue(readString, '_', 3).toInt();
     
   // text display tests
   display.setTextSize(1);
@@ -95,24 +99,44 @@ void loop() {
   display.setTextColor(BLACK, WHITE); // 'inverted' text
 
 
+
+//HDD USAGE BAR
     // text display tests
   display.setTextSize(1);
   display.setTextColor(WHITE);
-  display.setCursor(0,20);
-  display.println(msg2);
+  display.setCursor(0,15);
+  display.println("DISK:" + msg2);
   display.setTextColor(BLACK, WHITE); // 'inverted' text
 
- 
-
 int bar_width = display.width()-5;
-int bar_height = 15;
+int bar_height = 10;
 int rect_x = 0;
-int rect_y = 30;
+int rect_y = 25;
 int percentage = msg3;
 
 if(percentage < 0){percentage = 0;}
 if(percentage > 100){percentage = 100;}
 int inner_rect = percentage*((bar_width-4)/100);
+ display.fillRect(rect_x,rect_y,bar_width, bar_height, 1);
+ display.fillRect(rect_x+1,rect_y+1,bar_width-2, bar_height-2, 0);
+display.fillRect(rect_x+2,rect_y+2,inner_rect, bar_height-4, 1);
+
+display.display();
+
+
+    // text display tests
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,40);
+  display.println("RAM USAGE");
+  display.setTextColor(BLACK, WHITE); // 'inverted' text
+
+//RAM USAGE BAR
+rect_y = 50;
+ percentage = msg4;
+if(percentage < 0){percentage = 0;}
+if(percentage > 100){percentage = 100;}
+ inner_rect = percentage*((bar_width-4)/100);
  display.fillRect(rect_x,rect_y,bar_width, bar_height, 1);
  display.fillRect(rect_x+1,rect_y+1,bar_width-2, bar_height-2, 0);
 display.fillRect(rect_x+2,rect_y+2,inner_rect, bar_height-4, 1);
