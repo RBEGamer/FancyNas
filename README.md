@@ -28,3 +28,7 @@ A simple Nas system with info display
 # CHANGE HOSTNAME
 * /etc/hostname 
 * /etc/hosts
+
+# AUTO STANDBY HDD
+* sudo apt-get install hdparm
+* sudo hdparm -S 60 /dev/sda #for each hd
