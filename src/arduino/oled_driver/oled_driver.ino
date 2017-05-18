@@ -38,19 +38,25 @@ Adafruit_SSD1306 display(OLED_RESET);
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
+#define PIN_MOSFET 2
+#define PIN_FAN_PWM 6
+#define START_FAN_PERC 130 //20% start speed
 void setup()   {                
   Serial.begin(9600);
 
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64)
   // init done
-  
+ 
 
   // Clear the buffer.
   display.clearDisplay();
 
-  
+  pinMode(PIN_MOSFET, OUTPUT);
+  digitalWrite(PIN_MOSFET,HIGH);
 
+  pinMode(PIN_FAN_PWM, OUTPUT);
+  analogWrite(PIN_FAN_PWM, START_FAN_PERC);
   
   // text display tests
   display.setTextSize(2);
@@ -86,11 +92,20 @@ void loop() {
       readString += c; //makes the string readString
       if(c == '\n'){
         Serial.println(readString);
-        msg1 = "IP:" + getValue(readString, '_', 0);
+        msg1 = getValue(readString, '_', 0);
     msg2 = getValue(readString, '_', 1);
     msg3 = getValue(readString, '_', 2).toInt();
      msg4 = getValue(readString, '_', 3).toInt();
-    
+
+//UPDATE FAND SPEED
+String s5 = getValue(readString, '_', 4);
+if(s5 != ""){
+    int msg5 = s5.toInt();
+    msg5 = (((200.0-120.0)/100.0)*msg5) + 120;
+    if(msg5 < 120){msg5 = 120;}
+    if(msg5 >200){msg5 = 200;}
+    analogWrite(PIN_FAN_PWM, msg5);
+}
   // text display tests
   display.setTextSize(1);
   display.setTextColor(WHITE);
