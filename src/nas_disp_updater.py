@@ -42,15 +42,15 @@ def disk_usage(path):
     return _ntuple_diskusage(total, used, free)
 
 
-counter = 0;
 while 42:
-    counter = counter+1
+    #GET TEMP
+    fan_speed_percentage = 20
     # GET DIS USAGE
     watch_disk_usage_percentage = int(((1.0/disk_usage(watch_disk_path).total) * disk_usage(watch_disk_path).used)*100)
     # GET RAM
     tot_m, used_m, free_m = map(int, os.popen('free -t -m').readlines()[-1].split()[1:])
     ram_usage_percentage = (1.0/tot_m)*used_m*100
-    uart_send_string = "127.0.0.01" + "_" + str(watch_disk_path) + "_" + str(watch_disk_usage_percentage) + "_" + str(int(ram_usage_percentage)) + "_"
+    uart_send_string = "127.0.0.01" + "_" + str(watch_disk_path) + "_" + str(watch_disk_usage_percentage) + "_" + str(int(ram_usage_percentage)) + "_" + str(int(fan_speed_percentage)) + "_"
    
 
     bytes = bytearray(uart_send_string + '\n','ascii')
